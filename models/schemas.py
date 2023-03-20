@@ -133,10 +133,40 @@ class Experience(ExperienceBase):
     class Config:
         orm_mode = True
 
-
 class BlogBase(BaseModel):
     tilte: str
     sub_heading: Optional[str] = None
     thumb_img: Optional[str] = None
     tags: Optional[str] = None
-    text: Optional[str]
+    text: Optional[str] = None
+
+    class Config:
+        orm_mode = True
+
+class BlogCreate(BlogBase):
+    user_id: int
+
+class Blog(BlogBase):
+    user_id: int
+    blog_id: int
+
+class AccoladeBase(BaseModel):
+    title: str
+    date: Optional[str] = None
+    position = Optional[str]
+    role: Optional[str] = None
+    desc: Optional[str] = None
+    image: Optional[str] = None
+
+    provider: Optional[str] = None
+    provider_link: Optional[str] = None
+
+    class Config:
+        orm_mode = True
+
+class AccoladeCreate(AccoladeBase):
+    user_id: int
+
+class Accolade(AccoladeBase):
+    user_id: int
+    accolade_id: int

@@ -42,55 +42,89 @@ async def get_current_user():
 async def get_user_by_id(user_id:int):
     return {'Data':'Function not implemented'}
 
-@app.get('/shops/', response_model = List[schemas.Shop])
-async def get_shops():
-    return {'Data':'Function not implemented'}
-
-@app.get('/shops/{shop_id}', response_model = schemas.Shop)
-async def get_shop_by_id(shop_id:int):
-    return {'Data':'Function not implemented'}
-
-@app.get('/users/{user_id}/shops/', response_model = List[schemas.Shop])
-async def get_shops_from_user(user_id:int, db: Session = Depends(get_db)):
-    return {'Data':'Function not implemented'}
-
-@app.get('/products/', response_model = List[schemas.Product])
-async def get_products():
-    return {'Data':'Function not implemented'}
-
-@app.get('/products/{product_id}', response_model = schemas.Product)
-async def get_product_by_id(product_id:int):
-    return {'Data':'Function not implemented'}
-
-@app.get('/shops/{shop_id}/products/', response_model = List[schemas.Product])
-async def get_products_from_shop(shop_id:int):
-    return {'Data':'Function not implemented'}
-
-### CREATE NEW OBJECTS (USER, SHOP, PRODUCT)
-
 @app.post('/users/', response_model=schemas.User)
 async def create_user(user: schemas.UserCreate, db: Session= Depends(get_db)):
     return {'Data':'Function not implemented'}
 
+### CONTACTS
+
+@app.get('/contacts/', response_model = [schemas.Contact])
+async def get_contacts():
+    return {'Data':'Function not implemented'}
+
+@app.get('/contacts/{user_id}', response_model = [schemas.Contact])
+async def get_contacts_by_user(user: schemas.User):
+    return {'Data':'Function not implemented'}
+
 @app.post('/contacts/', response_model=schemas.Contact)
-async def create_project(project: schemas.ContactCreate, db: Session= Depends(get_db)):
+async def create_project(contact: schemas.ContactCreate, db: Session= Depends(get_db)):
+    return {'Data':'Function not implemented'}
+
+### PROJECTS
+
+# @app.post('/projects/', response_model=schemas.Project)
+# async def create_project(project: schemas.ProjectCreate, db: Session= Depends(get_db)):
+#     return {'Data':'Function not implemented'}
+
+@app.get('/projects/', response_model = [schemas.Project])
+async def get_projects():
+    return {'Data':'Function not implemented'}
+
+@app.get('/projects/{user_id}', response_model = [schemas.Project])
+async def get_projects_by_user(user: schemas.User):
     return {'Data':'Function not implemented'}
 
 @app.post('/projects/', response_model=schemas.Project)
 async def create_project(project: schemas.ProjectCreate, db: Session= Depends(get_db)):
     return {'Data':'Function not implemented'}
 
+### EXPERIENCES
+
+# @app.post('/experiences/', response_model=schemas.Experience)
+# async def create_project(project: schemas.ExperienceCreate, db: Session= Depends(get_db)):
+#     return {'Data':'Function not implemented'}
+
+@app.get('/experiences/', response_model = [schemas.Experience])
+async def get_experiences():
+    return {'Data':'Function not implemented'}
+
+@app.get('/experiences/{user_id}', response_model = [schemas.Experience])
+async def get_experiences_by_user(user: schemas.User):
+    return {'Data':'Function not implemented'}
+
 @app.post('/experiences/', response_model=schemas.Experience)
-async def create_project(project: schemas.ExperienceCreate, db: Session= Depends(get_db)):
+async def create_experience(experience: schemas.ExperienceCreate, db: Session= Depends(get_db)):
+    return {'Data':'Function not implemented'}
+
+### ACCOLADES
+
+@app.get('/accolades/', response_model = [schemas.Accolade])
+async def get_accolades():
+    return {'Data':'Function not implemented'}
+
+@app.get('/accolades/{user_id}', response_model = [schemas.Accolade])
+async def get_accolades_by_user(user: schemas.User):
     return {'Data':'Function not implemented'}
 
 @app.post('/accolades/', response_model=schemas.Accolade)
-async def create_project(project: schemas.AccoladeCreate, db: Session= Depends(get_db)):
+async def create_accolade(accolade: schemas.AccoladeCreate, db: Session= Depends(get_db)):
+    return {'Data':'Function not implemented'}
+
+
+### BLOGS
+
+@app.get('/blogs/', response_model = [schemas.Blog])
+async def get_blogs():
+    return {'Data':'Function not implemented'}
+
+@app.get('/blogs/{user_id}', response_model = [schemas.Blog])
+async def get_blogs_by_user(user: schemas.User):
     return {'Data':'Function not implemented'}
 
 @app.post('/blogs/', response_model=schemas.Blog)
-async def create_project(project: schemas.BlogCreate, db: Session= Depends(get_db)):
+async def create_blog(blog: schemas.BlogCreate, db: Session= Depends(get_db)):
     return {'Data':'Function not implemented'}
+
 
 ### ADD FACEBOOK SHOP CREDENTIALS
 
