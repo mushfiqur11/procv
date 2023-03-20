@@ -53,7 +53,7 @@ async def get_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_d
     return users
 
 @app.get('/users/me', response_model=schemas.User)
-async def get_current_user(current_user: schemas.User = Depends(get_current_active_user)):
+async def get_current_user(current_user: schemas.User = Depends(modules.get_current_active_users)):
     return current_user
 
 @app.get('/users/{user_id}', response_model=schemas.User)
