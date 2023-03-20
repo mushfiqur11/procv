@@ -6,26 +6,34 @@ class UserBase(BaseModel):
     full_name: Optional[str] = None
     pronouns: Optional[str] = None
     username: str
-    email: str
-    profile_img: Optional[str] = None
+    email: Optional[str] = None
     verified: Optional[bool] = False
+    profile_img: Optional[str] = None
+    thumb_img: Optional[str] = None
+    cover_img: Optional[str] = None
+
+    class Config:
+        orm_mode = True
 
 
 class UserCreate(UserBase):
-    password: str
+    email: str
 
 
 class User(UserBase):
     id: int
-    disabled: Optional[str] = None
 
     class Config:
         orm_mode = True
 
 
 class UserSecuredBase(BaseModel):
-    email: str
+    email: Optional[str] = None
     hashed_password: str
+    disabled: Optional[str] = None
+
+    class Config:
+        orm_mode = True
 
 
 class UserSecuredCreate(UserSecuredBase):
@@ -34,126 +42,101 @@ class UserSecuredCreate(UserSecuredBase):
 
 class UserSecured(UserSecuredBase):
     secured_id: int
-    user_id: int
+    user_info: User
 
     class Config:
         orm_mode = True
 
 
 class ContactBase(BaseModel):
-    user_id: int
+    contact_value: str
+    visible: Optional[bool] = True
+    contact_type: Optional[str] = None
+    thumb_img: Optional[str] = None
+    thumb_txt: Optional[str] = None
+
+    class Config:
+        orm_mode = True
 
 
 class ContactCreate(ContactBase):
-    contact_type: Optional[str] = None
-    contact_value: Optional[str] = None
+    user_id: int
 
 
 class Contact(ContactBase):
-    id: int
-    contact_type: Optional[str] = None
-    contact_value: Optional[str] = None
+    contact_id: int
+    user_info: User
 
     class Config:
         orm_mode = True
 
 
-class EmailBase(BaseModel):
+class ProjectBase(BaseModel):
+    project_type: str
+    title: str
+    sub_heading: Optional[str] = None
+    short_desc: Optional[str] = None
+    long_desc: Optional[str] = None
+    tags: Optional[str] = None
+    thumb_img: Optional[str] = None
+    main_img: Optional[str] = None
+    other_media: Optional[str] = None
+    other_media_title: Optional[str] = None
+    code: Optional[str] = None
+    paper: Optional[str] = None
+    app: Optional[str] = None
+    other_link: Optional[str] = None
+    other_link_title: Optional[str] = None
+
+    class Config:
+        orm_mode = True
+
+
+class ProjectCreate(ProjectBase):
     user_id: int
 
 
-class EmailCreate(EmailBase):
-    email: str
-
-
-class Email(EmailBase):
-    id: int
-    email: str
+class Project(ProjectBase):
+    project_id: int
+    user_info: User
 
     class Config:
         orm_mode = True
 
 
-class AddressBase(BaseModel):
+class ExperienceBase(BaseModel):
+    experience_type: str
+    title: Optional[str] = None
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
+    position: Optional[str] = None
+    role: Optional[str] = None
+    desc: Optional[str] = None
+    image: Optional[str] = None
+    employer: Optional[str] = None
+    employer_link: Optional[str] = None
+    supervisor: Optional[str] = None
+    supervisor_link: Optional[str] = None
+
+    class Config:
+        orm_mode = True
+
+
+class ExperienceCreate(ExperienceBase):
     user_id: int
 
 
-class AddressCreate(AddressBase):
-    address_type: Optional[str] = None
-    address_value: Optional[str] = None
-
-
-class Address(AddressBase):
-    id: int
-    address_type: Optional[str] = None
-    address_value: Optional[str] = None
+class Experience(ExperienceBase):
+    experience_id: int
+    user_info: User
 
     class Config:
         orm_mode = True
 
 
-class ShopBase(BaseModel):
-    primary_user_id: int
-    shop_name: str
-
-
-class ShopCreate(ShopBase):
-    pass
-
-
-class Shop(ShopBase):
-    shop_id: int
-
-    class Config:
-        orm_mode = True
-
-
-class ShopOwnerBase(BaseModel):
-    shop_id: int
-    user_id: int
-    access_level: str
-
-
-class ShopOwnerCreate(ShopOwnerBase):
-    pass
-
-
-class ShopOwner(ShopOwnerBase):
-    id: int
-
-    class Config:
-        orm_mode = True
-
-
-class ShopTokenBase(BaseModel):
-    shop_id: int
-    token: str
-    store_type: str
-
-
-class ShopTokenCreate(ShopTokenBase):
-    pass
-
-
-class ShopToken(ShopTokenBase):
-    token_id: int
-
-    class Config:
-        orm_mode = True
-
-
-class ProductBase(BaseModel):
-    shop_id: int
-    product_name: str
-
-
-class ProductCreate(ProductBase):
-    pass
-
-
-class Product(ProductBase):
-    product_id: int
-    count: int
-
-    class Config:
-        orm_mode = True
+class BlogBase(BaseModel):
+    tilte: str
+    sub_heading: Optional[str] = None
+    thumb_img: Optional[str] = None
+    tags: Optional[str] = None
+    text: Optional[str]

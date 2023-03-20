@@ -55,7 +55,13 @@ class Contact(Base):
     '''
     __tablename__ = "CONTACT"
     user_id = Column(Integer, ForeignKey('USER.id'))
-    contact_value = Column()
+    contact_id = Column(Integer, primary_key = True, server_default=sql.func.rand(),autoincrement=True)
+
+    contact_value = Column(String(255),nullable=False)
+    visible = Column(Boolean,nullable=False,default=True)
+    contact_type = Column(Enum('SOCIAL_MEDIA','EMAIL','PHONE','PORTFOLIO'))
+    thumb_img = Column(String(1000))
+    thumb_txt = Column(String(255))
 
     user_info = relationship(User)
 

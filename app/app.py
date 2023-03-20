@@ -72,12 +72,24 @@ async def get_products_from_shop(shop_id:int):
 async def create_user(user: schemas.UserCreate, db: Session= Depends(get_db)):
     return {'Data':'Function not implemented'}
 
-@app.post('/shops/', response_model=schemas.Shop)
-async def create_shop(db: Session = Depends(get_user_by_id)):
+@app.post('/contacts/', response_model=schemas.Contact)
+async def create_project(project: schemas.ContactCreate, db: Session= Depends(get_db)):
     return {'Data':'Function not implemented'}
 
-@app.post('/products/', response_model=schemas.Product)
-async def create_product():
+@app.post('/projects/', response_model=schemas.Project)
+async def create_project(project: schemas.ProjectCreate, db: Session= Depends(get_db)):
+    return {'Data':'Function not implemented'}
+
+@app.post('/experiences/', response_model=schemas.Experience)
+async def create_project(project: schemas.ExperienceCreate, db: Session= Depends(get_db)):
+    return {'Data':'Function not implemented'}
+
+@app.post('/accolades/', response_model=schemas.Accolade)
+async def create_project(project: schemas.AccoladeCreate, db: Session= Depends(get_db)):
+    return {'Data':'Function not implemented'}
+
+@app.post('/blogs/', response_model=schemas.Blog)
+async def create_project(project: schemas.BlogCreate, db: Session= Depends(get_db)):
     return {'Data':'Function not implemented'}
 
 ### ADD FACEBOOK SHOP CREDENTIALS
@@ -115,32 +127,21 @@ async def get_google_user_data(request: Request):
 async def logout_google(request: Request):
     return await google.logout(request)
 
-@app.get('/login/facebook')
-async def login_facebook():
-    return await facebook.login()
+# @app.get('/login/facebook')
+# async def login_facebook():
+#     return await facebook.login()
 
-@app.get('/login/facebook/callback')
-async def get_facebook_user_data():
-    return await facebook.callback()
-
-# @app.get('/auth/facebook')
-# async def auth_facebook():
+# @app.get('/login/facebook/callback')
+# async def get_facebook_user_data():
 #     return await facebook.callback()
 
-@app.get('/logout/facebook')
-async def logout_facebook():
-    return {'Data':'Function not implemented'}
+# # @app.get('/auth/facebook')
+# # async def auth_facebook():
+# #     return await facebook.callback()
 
-@app.get('/login/amazon')
-async def login_amazon():
-    return {'Data':'Function not implemented'}
+# @app.get('/logout/facebook')
+# async def logout_facebook():
+#     return {'Data':'Function not implemented'}
 
-@app.get('/auth/amazon')
-async def auth_amazon():
-    return {'Data':'Function not implemented'}
-
-@app.get('/logout/amazon')
-async def logout_amazon():
-    return {'Data':'Function not implemented'}
 
 
