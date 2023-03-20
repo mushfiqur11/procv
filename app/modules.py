@@ -5,7 +5,7 @@ from typing import List, Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from secrets import get_secret_key
+from utils.secrets import get_secret_key
 # from  import SessionLocal
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -15,7 +15,7 @@ algorithm = 'HS256'
 secret_key = get_secret_key()
 
 def get_db():
-    engine = get_engine()
+    engine = get_engine('procv')
     SessionLocal = sessionmaker(bind=engine)
     db = SessionLocal()
     try:

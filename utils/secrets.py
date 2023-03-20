@@ -1,13 +1,23 @@
 import os
 from starlette.config import Config
+from fastapi import HTTPException, status
 import logging
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
     
 def get_secret_key():
     '''
-    This function returns google client id
+    This function returns secret key
     '''
-    return os.environ['SECRET_KEY']
+    try: 
+        key= os.environ['SECRET_KEY']
+    except:
+        try:
+            config = Config('.env')
+            config_dict = config.__dict__.get('file_values')
+            key = config_dict['SECRET_KEY']
+        except:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="secret key not found")
+    return key
 
 def get_google_client_id():
     '''
