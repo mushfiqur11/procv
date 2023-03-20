@@ -99,3 +99,50 @@ class Experience(Base):
     title = Column(String(255))
     start_date = Column(Date)
     end_date = Column(Date)
+    position = Column(String(255))
+    role = Column(String(255))
+    desc = Column(String(255))
+    image = Column(String(1000))
+
+    employer = Column(String(255))
+    employer_link = Column(String(1000))
+    supervisor = Column(String(255))
+    supervisor_link = Column(String(1000))
+
+    user_info = relationship(User)
+
+class Blog(Base):
+    '''
+    Blog class
+    '''
+    __tablename__ = "BLOG"
+    user_id = Column(Integer, ForeignKey("USER.id"))
+    blog_id = Column(Integer, primary_key = True, server_default=sql.func.rand(),autoincrement=True)
+
+    tilte = Column(String(255),nullable=False)
+    sub_heading = Column(String(255))
+    thumb_img = Column(String(1000))
+    tags = Column(String(255))
+    text = Column(Text)
+
+    user_info = relationship(User)
+
+class Accolade(Base):
+    '''
+    Achievements
+    '''
+    __tablename__ = "ACCOLADE"
+    user_id = Column(Integer, ForeignKey("USER.id"))
+    accolade_id = Column(Integer, primary_key = True, server_default=sql.func.rand(),autoincrement=True)
+
+    title = Column(String(255),nullable=False)
+    date = Column(Date)
+    position = Column(String(255))
+    role = Column(String(255))
+    desc = Column(String(255))
+    image = Column(String(1000))
+
+    provider = Column(String(255))
+    provider_link = Column(String(1000))
+
+    user_info = relationship(User)
