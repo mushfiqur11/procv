@@ -6,26 +6,22 @@ class UserBase(BaseModel):
     full_name: Optional[str] = None
     pronouns: Optional[str] = None
     username: str
-    email: Optional[str] = None
-    verified: Optional[bool] = False
+    email: str
+
+
+class UserCreate(UserBase):
+    password: str
+
+
+class User(UserBase):
+    id: int
+    verified: bool
     profile_img: Optional[str] = None
     thumb_img: Optional[str] = None
     cover_img: Optional[str] = None
 
     class Config:
         orm_mode = True
-
-
-class UserCreate(UserBase):
-    email: str
-
-
-class User(UserBase):
-    id: int
-
-    class Config:
-        orm_mode = True
-
 
 class UserSecuredBase(BaseModel):
     email: Optional[str] = None
@@ -47,25 +43,21 @@ class UserSecured(UserSecuredBase):
     class Config:
         orm_mode = True
 
-
 class ContactBase(BaseModel):
     contact_value: str
-    visible: Optional[bool] = True
-    contact_type: Optional[str] = None
+    visible: bool = True
+    contact_type: str
     thumb_img: Optional[str] = None
     thumb_txt: Optional[str] = None
 
-    class Config:
-        orm_mode = True
-
 
 class ContactCreate(ContactBase):
-    user_id: int
+    pass
 
 
 class Contact(ContactBase):
     contact_id: int
-    user_info: User
+    user_id: int
 
     class Config:
         orm_mode = True
@@ -88,17 +80,14 @@ class ProjectBase(BaseModel):
     other_link: Optional[str] = None
     other_link_title: Optional[str] = None
 
-    class Config:
-        orm_mode = True
-
 
 class ProjectCreate(ProjectBase):
-    user_id: int
+    pass
 
 
 class Project(ProjectBase):
     project_id: int
-    user_info: User
+    user_id: int
 
     class Config:
         orm_mode = True
@@ -118,55 +107,62 @@ class ExperienceBase(BaseModel):
     supervisor: Optional[str] = None
     supervisor_link: Optional[str] = None
 
-    class Config:
-        orm_mode = True
-
 
 class ExperienceCreate(ExperienceBase):
-    user_id: int
+    pass
 
 
 class Experience(ExperienceBase):
     experience_id: int
-    user_info: User
+    user_id: int
 
     class Config:
         orm_mode = True
 
+
 class BlogBase(BaseModel):
-    tilte: str
+    title: str
     sub_heading: Optional[str] = None
     thumb_img: Optional[str] = None
     tags: Optional[str] = None
     text: Optional[str] = None
 
+
+class BlogCreate(BlogBase):
+    pass
+
+
+class Blog(BlogBase):
+    blog_id: int
+    user_id: int
+
     class Config:
         orm_mode = True
 
-class BlogCreate(BlogBase):
-    user_id: int
-
-class Blog(BlogBase):
-    user_id: int
-    blog_id: int
 
 class AccoladeBase(BaseModel):
     title: str
     date: Optional[str] = None
-    position = Optional[str]
+    position: Optional[str] = None
     role: Optional[str] = None
     desc: Optional[str] = None
     image: Optional[str] = None
-
     provider: Optional[str] = None
     provider_link: Optional[str] = None
+
+
+class AccoladeCreate(AccoladeBase):
+    pass
+
+
+class Accolade(AccoladeBase):
+    accolade_id: int
+    user_id: int
 
     class Config:
         orm_mode = True
 
-class AccoladeCreate(AccoladeBase):
-    user_id: int
 
-class Accolade(AccoladeBase):
-    user_id: int
-    accolade_id: int
+
+
+
