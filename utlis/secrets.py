@@ -3,6 +3,11 @@ from starlette.config import Config
 import logging
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
     
+def get_secret_key():
+    '''
+    This function returns google client id
+    '''
+    return os.environ['SECRET_KEY']
 
 def get_google_client_id():
     '''

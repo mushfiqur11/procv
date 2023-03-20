@@ -1,12 +1,13 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 import logging
 from models.database import get_engine
-from models import schemas
+from models import schemas, models
 from sqlalchemy.orm import sessionmaker, Session
 from typing import List
 from starlette.middleware.sessions import SessionMiddleware
 from controllers import google, facebook, amazon
 from starlette.requests import Request
+from app import modules
 
 
 
@@ -30,21 +31,50 @@ def get_db():
 # async def get_app(request:Request):
 #     return await google.homepage(request)
 
-@app.get('/users/', response_model = List[schemas.User])
-async def get_users():
-    return {'Data':'Function not implemented'}
+# @app.get('/users/', response_model = List[schemas.User])
+# async def get_users():
+#     return {'Data':'Function not implemented'}
 
-@app.get('/users/me', response_model = schemas.User)
-async def get_current_user():
-    return {'Data':'Function not implemented'}
+# @app.get('/users/me', response_model = schemas.User)
+# async def get_current_user():
+#     return {'Data':'Function not implemented'}
 
-@app.get('/users/{user_id}', response_model = schemas.User)
-async def get_user_by_id(user_id:int):
-    return {'Data':'Function not implemented'}
+# @app.get('/users/{user_id}', response_model = schemas.User)
+# async def get_user_by_id(user_id:int):
+#     return {'Data':'Function not implemented'}
+
+# @app.post('/users/', response_model=schemas.User)
+# async def create_user(user: schemas.UserCreate, db: Session= Depends(get_db)):
+#     return {'Data':'Function not implemented'}
+
+@app.get('/users/', response_model=List[schemas.User])
+async def get_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    users = modules.get_users(db, skip=skip, limit=limit)
+    return users
+
+@app.get('/users/me', response_model=schemas.User)
+async def get_current_user(current_user: schemas.User = Depends(get_current_active_user)):
+    return current_user
+
+@app.get('/users/{user_id}', response_model=schemas.User)
+async def get_user_by_id(user_id:int, db: Session = Depends(get_db)):
+    user = modules.get_user_by_id(db, user_id=user_id)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
 
 @app.post('/users/', response_model=schemas.User)
-async def create_user(user: schemas.UserCreate, db: Session= Depends(get_db)):
-    return {'Data':'Function not implemented'}
+async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    email = user.email
+    if not models.User.is_valid_email(email):
+        raise HTTPException(status_code=400, detail="Invalid email address")
+    db_user = modules.get_user_by_email(db, email=email)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    db_user = modules.get_user_by_username(db, username=user.username)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Username already registered")
+    return modules.create_user(db=db, user=user)
 
 ### CONTACTS
 
