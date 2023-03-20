@@ -1,4 +1,4 @@
-# SYNCEEZ DEMO
+# PRO CV
 
 
 
@@ -9,5 +9,5 @@
 Run the following code bits to generate a requirements.txt file
 
 '''
-pipreqs ..\project_synceez
+pipreqs ..\project_procv
 '''
