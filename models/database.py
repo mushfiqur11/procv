@@ -2,6 +2,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import declarative_base
 from models.models import Base
 
+
 username = 'root'
 password = 'Mra180317'
 host = 'localhost'
