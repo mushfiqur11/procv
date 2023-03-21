@@ -1,11 +1,14 @@
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import declarative_base
 from models.models import Base
+from starlette.config import Config
 
+config = Config('.env')
+config_dict = config.__dict__.get('file_values')
 
-username = 'root'
-password = 'Mra180317'
-host = 'localhost'
+username = str(config_dict['username'])
+password = str(config_dict['password'])
+host = str(config_dict['database_host'])
 # database_name = ''
 
 def create_new_db(database_name):
