@@ -7,7 +7,12 @@ class UserBase(BaseModel):
     pronouns: Optional[str] = None
     username: str
     email: str
+    profile_img: Optional[str] = None
+    thumb_img: Optional[str] = None
+    cover_img: Optional[str] = None
 
+    class Config:
+        orm_mode = True
 
 class UserCreate(UserBase):
     password: str
@@ -16,29 +21,17 @@ class UserCreate(UserBase):
 class User(UserBase):
     id: int
     verified: bool
-    profile_img: Optional[str] = None
-    thumb_img: Optional[str] = None
-    cover_img: Optional[str] = None
 
     class Config:
         orm_mode = True
 
-class UserSecuredBase(BaseModel):
-    email: Optional[str] = None
-    hashed_password: str
-    disabled: Optional[str] = None
-
-    class Config:
-        orm_mode = True
-
-
-class UserSecuredCreate(UserSecuredBase):
+class UserSecured(BaseModel):
     user_id: int
-
-
-class UserSecured(UserSecuredBase):
     secured_id: int
     user_info: User
+    email: str
+    hashed_password: str
+    salt: str
 
     class Config:
         orm_mode = True
@@ -50,18 +43,20 @@ class ContactBase(BaseModel):
     thumb_img: Optional[str] = None
     thumb_txt: Optional[str] = None
 
+    class Config:
+        orm_mode = True
 
 class ContactCreate(ContactBase):
-    pass
-
-
-class Contact(ContactBase):
-    contact_id: int
     user_id: int
 
     class Config:
         orm_mode = True
 
+class Contact(ContactBase):
+    contact_id: int
+
+    class Config:
+        orm_mode = True
 
 class ProjectBase(BaseModel):
     project_type: str
@@ -82,12 +77,12 @@ class ProjectBase(BaseModel):
 
 
 class ProjectCreate(ProjectBase):
-    pass
+    user_id: int
+    visible: bool = True
 
 
 class Project(ProjectBase):
     project_id: int
-    user_id: int
 
     class Config:
         orm_mode = True
@@ -109,12 +104,12 @@ class ExperienceBase(BaseModel):
 
 
 class ExperienceCreate(ExperienceBase):
-    pass
+    user_id: int
+    visible: bool = True
 
 
 class Experience(ExperienceBase):
     experience_id: int
-    user_id: int
 
     class Config:
         orm_mode = True
@@ -129,12 +124,12 @@ class BlogBase(BaseModel):
 
 
 class BlogCreate(BlogBase):
-    pass
+    user_id: int
+    visible: bool = True
 
 
 class Blog(BlogBase):
     blog_id: int
-    user_id: int
 
     class Config:
         orm_mode = True
@@ -152,12 +147,12 @@ class AccoladeBase(BaseModel):
 
 
 class AccoladeCreate(AccoladeBase):
-    pass
+    user_id: int
+    visible: bool = True
 
 
 class Accolade(AccoladeBase):
     accolade_id: int
-    user_id: int
 
     class Config:
         orm_mode = True

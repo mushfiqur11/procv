@@ -1,7 +1,7 @@
 import logging
 import uvicorn
 import argparse
-
+from app import *
 def start_server():
     '''
     The functions starts the FastAPI server in port 8000

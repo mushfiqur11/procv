@@ -11,9 +11,9 @@ class User(Base):
     __tablename__ = 'USER'
     full_name = Column(String(255))
     pronouns = Column(String(255))
-    id = Column(Integer, primary_key=True, autoincrement=True, server_default=sql.func.rand())
+    id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(255), unique=True, nullable=False)
-    email = Column(String(255), unique=True)
+    email = Column(String(255), unique=True, nullable=False)
     
     verified = Column(Boolean, default=False)
 
@@ -21,7 +21,6 @@ class User(Base):
     profile_img = Column(String(1000))
     thumb_img = Column(String(1000))
     cover_img = Column(String(1000))
-
 
     @staticmethod
     def is_valid_email(email):
@@ -44,9 +43,9 @@ class UserSecured(Base):
     __tablename__ = 'USER_SECURED'
     secured_id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('USER.id'))
-    email = Column(String(255))
+    username = Column(String(255))
     hashed_password = Column(String(255))
-    disabled = Column(String(255))
+    salt = Column(String(255))
     user_info = relationship(User)
 
 class Contact(Base):
@@ -55,7 +54,7 @@ class Contact(Base):
     '''
     __tablename__ = "CONTACT"
     user_id = Column(Integer, ForeignKey('USER.id'))
-    contact_id = Column(Integer, primary_key = True, server_default=sql.func.rand(),autoincrement=True)
+    contact_id = Column(Integer, primary_key = True ,autoincrement=True)
 
     contact_value = Column(String(255),nullable=False)
     visible = Column(Boolean,nullable=False,default=True)
@@ -71,7 +70,7 @@ class Project(Base):
     '''
     __tablename__ = "PROJECT"
     user_id = Column(Integer, ForeignKey("USER.id"))
-    project_id = Column(Integer, primary_key = True, server_default=sql.func.rand(),autoincrement=True)
+    project_id = Column(Integer, primary_key = True ,autoincrement=True)
     project_type = Column(Enum('DEVELOPMENT','RESEARCH'), nullable=False)
 
     tags = Column(String(255))
@@ -79,6 +78,7 @@ class Project(Base):
     sub_heading = Column(String(255))
     short_desc = Column(Text)
     long_desc = Column(Text)
+    visible = Column(Boolean, default=True, nullable=False)
 
     thumb_img = Column(String(1000))
     main_img = Column(String(1000))
@@ -99,8 +99,9 @@ class Experience(Base):
     '''
     __tablename__ = "EXPERIENCE"
     user_id = Column(Integer, ForeignKey("USER.id"))
-    experience_id = Column(Integer, primary_key = True, server_default=sql.func.rand(),autoincrement=True)
+    experience_id = Column(Integer, primary_key = True ,autoincrement=True)
     experience_type = Column(Enum('STUDY','INDUSTRY','ACADEMIC'), nullable=False)
+    visible = Column(Boolean,nullable=False,default=True)
 
     title = Column(String(255))
     start_date = Column(Date)
@@ -123,13 +124,14 @@ class Blog(Base):
     '''
     __tablename__ = "BLOG"
     user_id = Column(Integer, ForeignKey("USER.id"))
-    blog_id = Column(Integer, primary_key = True, server_default=sql.func.rand(),autoincrement=True)
+    blog_id = Column(Integer, primary_key = True ,autoincrement=True)
 
     tilte = Column(String(255),nullable=False)
     sub_heading = Column(String(255))
     thumb_img = Column(String(1000))
     tags = Column(String(255))
     text = Column(Text)
+    visible = Column(Boolean,nullable = False, default=True)
 
     user_info = relationship(User)
 
@@ -139,7 +141,7 @@ class Accolade(Base):
     '''
     __tablename__ = "ACCOLADE"
     user_id = Column(Integer, ForeignKey("USER.id"))
-    accolade_id = Column(Integer, primary_key = True, server_default=sql.func.rand(),autoincrement=True)
+    accolade_id = Column(Integer, primary_key = True ,autoincrement=True)
 
     title = Column(String(255),nullable=False)
     date = Column(Date)
@@ -147,6 +149,7 @@ class Accolade(Base):
     role = Column(String(255))
     desc = Column(String(255))
     image = Column(String(1000))
+    visible = Column(Boolean,nullable = False, default = True)
 
     provider = Column(String(255))
     provider_link = Column(String(1000))
