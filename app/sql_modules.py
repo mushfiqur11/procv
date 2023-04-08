@@ -21,7 +21,7 @@ def hash_password(password, salt):
     return str(bcrypt.hashpw(password,salt))
 
 def get_db():
-    engine = get_engine('procv')
+    engine = get_engine('defaultdb')
     SessionLocal = sessionmaker(bind=engine)
     db = SessionLocal()
     try:
