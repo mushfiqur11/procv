@@ -285,7 +285,7 @@ def create_accolade(accolade: schemas.AccoladeCreate, user_id: str,  db: Session
     # try:
     db_accolade = models.Accolade(
         title = accolade.title,
-        date= accolade.date,
+        date= accolade.event_date,
         position= accolade.position,
         role= accolade.role,
         desc= accolade.desc,
