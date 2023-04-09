@@ -332,14 +332,14 @@ def create_blog(blog: schemas.BlogCreate, user_id: str,  db: Session = Depends(g
 
 ### Skill
 
-def get_skill_by_user(_user_id: str,  db: Session = Depends(get_db), limit:int = 100):
+def get_skills_by_user(_user_id: str,  db: Session = Depends(get_db), limit:int = 100):
     user = get_user_by_id(_user_id,db)
     if user is None:
         return []
     skills = db.query(models.Skill).filter(models.Skill._user_id == user._id).limit(limit).all()
     return skills
 
-def create_skills(skill: schemas.SkillCreate, user_id: str,  db: Session = Depends(get_db)):
+def create_skill(skill: schemas.SkillCreate, user_id: str,  db: Session = Depends(get_db)):
     # try:
     db_skill = models.Skill(
         skill_name = skill.skill_name,
@@ -384,4 +384,4 @@ def update_summary(_user_id: str, summary: str, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(user)
 
-# async def generate_summary():
+# def generate_summary():

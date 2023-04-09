@@ -189,6 +189,20 @@ async def create_accolade(accolade: schemas.AccoladeCreate, user_id:str, db: Ses
     return sql_modules.create_accolade(accolade,user_id, db)
 
 
+### SKILLS
+
+@app.get('/skills/user_id={user_id}', response_model = List[schemas.Skill])
+async def get_skills_by_user(user_id: str, db: Session = Depends(get_db)):
+    return sql_modules.get_skills_by_user(user_id, db)
+
+@app.post('/skills/user_id={user_id}', response_model=schemas.Skill)
+async def create_skill(skill: schemas.SkillCreate, user_id:str, db: Session= Depends(get_db)):
+    user = sql_modules.get_user_by_id(user_id, db)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    user_id = user._id
+    return sql_modules.create_skill(skill,user_id, db)
+
 ### BLOGS
 
 @app.get('/blogs/', response_model = List[schemas.Blog])
