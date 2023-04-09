@@ -214,6 +214,14 @@ async def create_blog(blog: schemas.BlogCreate, user_id:str, db: Session= Depend
     return sql_modules.create_blog(blog,user_id, db)
 
 
+@app.get('/about/user_id={user_id}', response_model=schemas.About)
+async def get_about(user_id:str, db: Session=Depends(get_db)):
+    user = sql_modules.get_user_by_id(user_id, db)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    user_id = user._id
+    return sql_modules.get_about_user(user_id, db)
+
 ### LOGIN ROUTES (INTERNAL + GOOGLE + FACEBOOK + AMAZON)
 
 @app.get('/login')

@@ -17,6 +17,7 @@ class User(Base):
     _id = Column(UUID(as_uuid=True), unique=True, nullable=False, primary_key=True, default=uuid.uuid4)
     username = Column(String(255), unique=True, nullable=False)
     email = Column(String(255), unique=True, nullable=False)
+    bio = Column(String(1000))
     
     verified = Column(Boolean, default=False)
 
@@ -61,7 +62,7 @@ class Contact(Base):
 
     contact_value = Column(String(255),nullable=False)
     visible = Column(Boolean,nullable=False,default=True)
-    contact_type = Column(Enum('SOCIAL_MEDIA','EMAIL','PHONE','PORTFOLIO',name='contact_type'))
+    contact_type = Column(Enum('SOCIAL_MEDIA','EMAIL','PHONE','PORTFOLIO','GITHUB',name='contact_type'))
     thumb_img = Column(String(1000))
     thumb_txt = Column(String(255))
 

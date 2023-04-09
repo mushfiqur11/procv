@@ -129,7 +129,8 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)) -> Opti
         email=user.email,
         profile_img=user.profile_img,
         thumb_img=user.thumb_img,
-        cover_img=user.cover_img
+        cover_img=user.cover_img,
+        bio=user.bio
     )
     db.add(db_user)
     db.commit()
@@ -338,9 +339,31 @@ def get_skill_by_user(_user_id: str,  db: Session = Depends(get_db), limit:int =
 def create_skills(skill: schemas.SkillCreate, user_id: str,  db: Session = Depends(get_db)):
     # try:
     db_skill = models.Skill(
-        skill_name = skill.skill_name
+        skill_name = skill.skill_name,
+        _user_id = user_id
     )
     db.add(db_skill)
     db.commit()
     db.refresh(db_skill)
     return db_skill
+
+def get_about_user(_user_id: str, db: Session = Depends(get_db)):
+    user = get_user_by_id(_user_id,db)
+    contacts = get_contacts_by_user(_user_id,db)
+    phone = contacts.filter(models.Contact.contact_type=='PHONE').first()
+    github = contacts.filter(models.Contact.contact_type=='GITHUB').first()
+    location = contacts.filter(models.Contact.contact_type=='LOCATION').first()
+    if phone is None:
+        phone = 'N/A'
+    if github is None:
+        github = 'N/A'
+    if location is None:
+        location = 'N/A'
+    db_about = schemas.About(
+        name=user.full_name,
+        bio=user.bio,
+        phone=phone,
+        github=github,
+        city=location
+    )
+    return db_about

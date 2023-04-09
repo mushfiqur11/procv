@@ -11,6 +11,7 @@ class UserBase(BaseModel):
     profile_img: Optional[str] = None
     thumb_img: Optional[str] = None
     cover_img: Optional[str] = None
+    bio: Optional[str] = None
     
     class Config:
         orm_mode = True
@@ -186,3 +187,17 @@ class Skill(SkillBase):
         orm_mode = True
 
 
+
+
+
+
+class About(BaseModel):
+    name: str
+    bio: str
+    phone: str
+    github: str
+    city: str
+    phone: str
+
+    class Config:
+        orm_mode = True
