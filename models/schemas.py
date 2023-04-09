@@ -2,7 +2,6 @@ from typing import List, Optional
 import uuid
 from pydantic import BaseModel, validator
 
-
 class UserBase(BaseModel):
     full_name: Optional[str] = None
     pronouns: Optional[str] = None
@@ -13,6 +12,7 @@ class UserBase(BaseModel):
     cover_img: Optional[str] = None
     bio: Optional[str] = None
     career_role: Optional[str] = None
+    # template: Optional[str] = None
     
     class Config:
         orm_mode = True

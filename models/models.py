@@ -7,6 +7,18 @@ from sqlalchemy.dialects.postgresql import UUID
 
 Base = declarative_base()
 
+# class Template(Base):
+#     '''
+#     DB model to store template information
+#     '''
+#     __tablename__ = 'TEMPLATE'
+#     _template_id = Column(UUID(as_uuid=True), unique=True, nullable=False, primary_key=True, default=uuid.uuid4)
+#     location = Column(String(1000))
+#     img = Column(String(1000))
+#     title = Column(String(255))
+#     desc = Column(String(255))
+
+
 class User(Base):
     '''
     DB model to store information about users
@@ -21,6 +33,8 @@ class User(Base):
     career_role = Column(String(255))
 
     summary = Column(String(1000))
+
+    # _template_id = Column(UUID(as_uuid=True), ForeignKey('TEMPLATE._template_id'))
     
     verified = Column(Boolean, default=False)
 

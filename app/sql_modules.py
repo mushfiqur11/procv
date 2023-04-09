@@ -249,11 +249,13 @@ def get_experience_by_user_and_type(_user_id: str, type:str, db: Session = Depen
 
 def create_experience(experience: schemas.ExperienceCreate, user_id: str,  db: Session = Depends(get_db)):
     # try:
+    start_date = datetime.strptime(experience.start_date, '%d %Y').date()
+    end_date = datetime.strptime(experience.end_date, '%d %Y').date()
     db_experience = models.Experience(
         experience_type = experience.experience_type,
         title= experience.title,
-        start_date= experience.start_date,
-        end_date= experience.end_date,
+        start_date= start_date,
+        end_date= end_date,
         position= experience.position,
         role= experience.role,
         desc= experience.desc,
