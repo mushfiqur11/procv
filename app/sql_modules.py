@@ -57,7 +57,7 @@ def get_db():
 #     user = db.query(models.User).filter(models.User.username==username).first()
 #     if not user:
 #         return False
-#     user_secured = db.query(models.UserSecured).filter(models.UserSecured._user_id == user.id).first()
+#     user_secured = db.query(models.UserSecured).filter(models.UserSecured._user_id == user._id).first()
 #     if not user_secured:
 #         return False
 #     called_hash = hash_password(password,user_secured.salt)
@@ -95,7 +95,7 @@ def get_users(limit: int = 100, db: Session = Depends(get_db)) -> List[models.Us
 
 # Function to get user by id
 def get_user_by_id(_user_id: str, db: Session = Depends(get_db)) -> Optional[models.User]:
-    user = db.query(models.User).filter(models.User.id == _user_id).first()
+    user = db.query(models.User).filter(models.user._id == _user_id).first()
     return user
 
 # Function to get user by email
@@ -139,7 +139,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)) -> Opti
     #     salt = bcrypt.gensalt()
     #     password = user.password.encode('utf-8')
     #     db_user_secured = models.UserSecured(
-    #         _user_id = db_user.id,
+    #         _user_id = db_user._id,
     #         user_info = db_user,
     #         username = db_user.username,
     #         hashed_password = hash_password(password,salt),
@@ -161,14 +161,14 @@ def get_contacts_by_user(_user_id: str,  db: Session = Depends(get_db), limit:in
     user = get_user_by_id(_user_id,db)
     if user is None:
         return []
-    contacts = db.query(models.Contact).filter(models.Contact._user_id == user.id).limit(limit).all()
+    contacts = db.query(models.Contact).filter(models.Contact._user_id == user._id).limit(limit).all()
     return contacts
 
 def get_contacts_by_user_and_type(_user_id: str, type:str, db: Session = Depends(get_db), limit:int = 100):
     user = get_user_by_id(_user_id,db)
     if user is None:
         return []
-    contacts = db.query(models.Contact).filter(models.Contact._user_id == user.id).filter(models.Contact.contact_type==type).filter(models.Contact.visible==True).limit(limit).all()
+    contacts = db.query(models.Contact).filter(models.Contact._user_id == user._id).filter(models.Contact.contact_type==type).filter(models.Contact.visible==True).limit(limit).all()
     return contacts
 
 def create_contact(contact: schemas.ContactCreate, user_id: str, db: Session = Depends(get_db)):
@@ -193,14 +193,14 @@ def get_projects_by_user(_user_id: str,  db: Session = Depends(get_db), limit:in
     user = get_user_by_id(_user_id,db)
     if user is None:
         return []
-    projects = db.query(models.Project).filter(models.Project._user_id == user.id).limit(limit).all()
+    projects = db.query(models.Project).filter(models.Project._user_id == user._id).limit(limit).all()
     return projects
 
 def get_projects_by_user_and_type(_user_id: str, type:str, db: Session = Depends(get_db), limit:int = 100):
     user = get_user_by_id(_user_id,db)
     if user is None:
         return []
-    projects = db.query(models.Project).filter(models.Project._user_id == user.id).filter(models.Project.project_type==type).filter(models.Project.visible==True).limit(limit).all()
+    projects = db.query(models.Project).filter(models.Project._user_id == user._id).filter(models.Project.project_type==type).filter(models.Project.visible==True).limit(limit).all()
     return projects
 
 def create_project(project: schemas.ProjectCreate, user_id: str,  db: Session = Depends(get_db)):
@@ -242,7 +242,7 @@ def get_experience_by_user_and_type(_user_id: str, type:str, db: Session = Depen
     user = get_user_by_id(_user_id,db)
     if user is None:
         return []
-    experiences = db.query(models.Experience).filter(models.Experience._user_id == user.id).filter(models.Experience.experience_type==type).filter(models.Experience.visible==True).limit(limit).all()
+    experiences = db.query(models.Experience).filter(models.Experience._user_id == user._id).filter(models.Experience.experience_type==type).filter(models.Experience.visible==True).limit(limit).all()
     return experiences
 
 def create_experience(experience: schemas.ExperienceCreate, user_id: str,  db: Session = Depends(get_db)):
@@ -274,7 +274,7 @@ def get_accolades_by_user(_user_id: str,  db: Session = Depends(get_db), limit:i
     user = get_user_by_id(_user_id,db)
     if user is None:
         return []
-    accolades = db.query(models.Accolade).filter(models.Accolade._user_id == user.id).limit(limit).all()
+    accolades = db.query(models.Accolade).filter(models.Accolade._user_id == user._id).limit(limit).all()
     return accolades
 
 def create_accolade(accolade: schemas.AccoladeCreate, user_id: str,  db: Session = Depends(get_db)):
@@ -306,7 +306,7 @@ def get_blogs_by_user(_user_id: str,  db: Session = Depends(get_db), limit:int =
     user = get_user_by_id(_user_id,db)
     if user is None:
         return []
-    blogs = db.query(models.Blog).filter(models.Blog._user_id == user.id).limit(limit).all()
+    blogs = db.query(models.Blog).filter(models.Blog._user_id == user._id).limit(limit).all()
     return blogs
 
 def create_blog(blog: schemas.BlogCreate, user_id: str,  db: Session = Depends(get_db)):
@@ -332,7 +332,7 @@ def get_skill_by_user(_user_id: str,  db: Session = Depends(get_db), limit:int =
     user = get_user_by_id(_user_id,db)
     if user is None:
         return []
-    skills = db.query(models.Skill).filter(models.Skill._user_id == user.id).limit(limit).all()
+    skills = db.query(models.Skill).filter(models.Skill._user_id == user._id).limit(limit).all()
     return skills
 
 def create_skills(skill: schemas.SkillCreate, user_id: str,  db: Session = Depends(get_db)):
