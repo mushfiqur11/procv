@@ -62,7 +62,7 @@ class Contact(Base):
 
     contact_value = Column(String(255),nullable=False)
     visible = Column(Boolean,nullable=False,default=True)
-    contact_type = Column(Enum('SOCIAL_MEDIA','EMAIL','PHONE','PORTFOLIO','GITHUB',name='contact_type'))
+    contact_type = Column(Enum('SOCIAL_MEDIA','EMAIL','PHONE','PORTFOLIO','GITHUB','LOCATION', name='contact_type'))
     thumb_img = Column(String(1000))
     thumb_txt = Column(String(255))
 
@@ -75,7 +75,7 @@ class Project(Base):
     __tablename__ = "PROJECT"
     _user_id = Column(UUID(as_uuid=True), ForeignKey("USER._id"))
     _project_id = Column(UUID(as_uuid=True), unique=True, nullable=False, primary_key=True, default=uuid.uuid4)
-    project_type = Column(Enum('DEVELOPMENT','RESEARCH',name='project_type'), nullable=False)
+    project_type = Column(Enum('DEVELOPMENT','RESEARCH','DESIGN',name='project_type'), nullable=False)
 
     tags = Column(String(255))
     title = Column(String(255),nullable=False)
