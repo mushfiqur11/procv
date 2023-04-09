@@ -193,11 +193,11 @@ class Skill(SkillBase):
 
 class About(BaseModel):
     name: str
+    email: str
     bio: str
     phone: str
     github: str
     city: str
-    phone: str
 
     class Config:
         orm_mode = True

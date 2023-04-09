@@ -350,17 +350,24 @@ def create_skills(skill: schemas.SkillCreate, user_id: str,  db: Session = Depen
 def get_about_user(_user_id: str, db: Session = Depends(get_db)):
     user = get_user_by_id(_user_id,db)
     contacts = get_contacts_by_user(_user_id,db)
-    phone = contacts.filter(models.Contact.contact_type=='PHONE').first()
-    github = contacts.filter(models.Contact.contact_type=='GITHUB').first()
-    location = contacts.filter(models.Contact.contact_type=='LOCATION').first()
+    phone = db.query(models.Contact).filter(models.Contact._user_id == user._id).filter(models.Contact.contact_type=='PHONE').filter(models.Contact.visible==True).first()
+    github = db.query(models.Contact).filter(models.Contact._user_id == user._id).filter(models.Contact.contact_type=='GITHUB').filter(models.Contact.visible==True).first()
+    location = db.query(models.Contact).filter(models.Contact._user_id == user._id).filter(models.Contact.contact_type=='LOCATION').filter(models.Contact.visible==True).first()
     if phone is None:
         phone = 'N/A'
+    else:
+        phone = phone.contact_value
     if github is None:
         github = 'N/A'
+    else:
+        github = github.contact_value
     if location is None:
         location = 'N/A'
+    else:
+        location = location.contact_value
     db_about = schemas.About(
         name=user.full_name,
+        email=user.email,
         bio=user.bio,
         phone=phone,
         github=github,
