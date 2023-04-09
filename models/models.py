@@ -18,6 +18,9 @@ class User(Base):
     username = Column(String(255), unique=True, nullable=False)
     email = Column(String(255), unique=True, nullable=False)
     bio = Column(String(1000))
+    career_role = Column(String(255))
+
+    summary = Column(String(1000))
     
     verified = Column(Boolean, default=False)
 

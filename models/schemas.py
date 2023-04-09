@@ -12,6 +12,7 @@ class UserBase(BaseModel):
     thumb_img: Optional[str] = None
     cover_img: Optional[str] = None
     bio: Optional[str] = None
+    career_role: Optional[str] = None
     
     class Config:
         orm_mode = True
@@ -23,6 +24,7 @@ class UserCreate(UserBase):
 class User(UserBase):
     _id: str
     verified: bool
+    summary: Optional[str]
 
     # @validator('_id')
     # def validate_uuid(cls, value):

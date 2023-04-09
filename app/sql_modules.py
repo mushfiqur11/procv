@@ -130,7 +130,8 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)) -> Opti
         profile_img=user.profile_img,
         thumb_img=user.thumb_img,
         cover_img=user.cover_img,
-        bio=user.bio
+        bio=user.bio,
+        career_role=user.career_role
     )
     db.add(db_user)
     db.commit()
@@ -349,7 +350,6 @@ def create_skills(skill: schemas.SkillCreate, user_id: str,  db: Session = Depen
 
 def get_about_user(_user_id: str, db: Session = Depends(get_db)):
     user = get_user_by_id(_user_id,db)
-    contacts = get_contacts_by_user(_user_id,db)
     phone = db.query(models.Contact).filter(models.Contact._user_id == user._id).filter(models.Contact.contact_type=='PHONE').filter(models.Contact.visible==True).first()
     github = db.query(models.Contact).filter(models.Contact._user_id == user._id).filter(models.Contact.contact_type=='GITHUB').filter(models.Contact.visible==True).first()
     location = db.query(models.Contact).filter(models.Contact._user_id == user._id).filter(models.Contact.contact_type=='LOCATION').filter(models.Contact.visible==True).first()
@@ -374,3 +374,12 @@ def get_about_user(_user_id: str, db: Session = Depends(get_db)):
         city=location
     )
     return db_about
+
+def update_summary(_user_id: str, summary: str, db: Session = Depends(get_db)):
+    user = get_user_by_id(_user_id,db)
+    if user:
+        setattr(user,'summary',summary)
+        db.commit()
+        db.refresh(user)
+
+# async def generate_summary():
