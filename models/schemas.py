@@ -1,6 +1,7 @@
 from typing import List, Optional
 import uuid
 from pydantic import BaseModel, validator
+from datetime import date
 
 class UserBase(BaseModel):
     full_name: Optional[str] = None
@@ -103,8 +104,8 @@ class Project(ProjectBase):
 class ExperienceBase(BaseModel):
     experience_type: str
     title: Optional[str] = None
-    start_date: Optional[str] = None
-    end_date: Optional[str] = None
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
     position: Optional[str] = None
     role: Optional[str] = None
     desc: Optional[str] = None

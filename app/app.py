@@ -56,7 +56,7 @@ async def get_users(limit: int = 100, db: Session = Depends(get_db)):
 #     if user is None:
 #         raise HTTPException(status_code=404, detail="User not found")
 #     return user
-async def get_user_by_id(user_id:int, db: Session = Depends(get_db)):
+async def get_user_by_id(user_id:str, db: Session = Depends(get_db)):
     user = sql_modules.get_user_by_id(user_id, db)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
