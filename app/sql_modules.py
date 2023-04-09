@@ -235,7 +235,7 @@ def get_experiences_by_user(_user_id: str,  db: Session = Depends(get_db), limit
     user = get_user_by_id(_user_id,db)
     if user is None:
         return []
-    experiences = db.query(models.Experience).filter(models.Experience._user_id == user.id).limit(limit).all()
+    experiences = db.query(models.Experience).filter(models.Experience._user_id == user._id).limit(limit).all()
     return experiences
 
 def get_experience_by_user_and_type(_user_id: str, type:str, db: Session = Depends(get_db), limit:int = 100):
