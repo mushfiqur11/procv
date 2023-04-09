@@ -29,7 +29,7 @@ def create_new_db(database_name):
     elif db=='Cockroach':
         password = str(config_dict['COCKROACH_PASSWORD'])
         username = str(config_dict['COCKROACH_USER'])
-        DATABASE_URL= f"cockroachdb://{username}:{password}@chasm-gorilla-10098.7tt.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full"
+        DATABASE_URL= f"cockroachdb://{username}:{password}@chasm-gorilla-10098.7tt.cockroachlabs.cloud:26257/{database_name}?sslmode=verify-full"
     
     engine = create_engine(DATABASE_URL)
     with engine.connect() as con:

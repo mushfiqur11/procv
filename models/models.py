@@ -1,6 +1,9 @@
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, Enum, Boolean, sql, Date
 from sqlalchemy.orm import relationship, validates, declarative_base
+import uuid
+from sqlalchemy.ext.hybrid import hybrid_property
 import re
+from sqlalchemy.dialects.postgresql import UUID
 
 Base = declarative_base()
 
@@ -11,7 +14,7 @@ class User(Base):
     __tablename__ = 'USER'
     full_name = Column(String(255))
     pronouns = Column(String(255))
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    _id = Column(UUID(as_uuid=True), unique=True, nullable=False, primary_key=True, default=uuid.uuid4)
     username = Column(String(255), unique=True, nullable=False)
     email = Column(String(255), unique=True, nullable=False)
     
@@ -41,8 +44,8 @@ class UserSecured(Base):
     Model to store user secrets
     '''
     __tablename__ = 'USER_SECURED'
-    secured_id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('USER.id'))
+    _secured_id = Column(UUID(as_uuid=True), unique=True, nullable=False, primary_key=True, default=uuid.uuid4)
+    _user_id = Column(UUID(as_uuid=True), ForeignKey('USER._id'))
     username = Column(String(255))
     hashed_password = Column(String(255))
     salt = Column(String(255))
@@ -53,12 +56,12 @@ class Contact(Base):
     Contact information of the users
     '''
     __tablename__ = "CONTACT"
-    user_id = Column(Integer, ForeignKey('USER.id'))
-    contact_id = Column(Integer, primary_key = True ,autoincrement=True)
+    _user_id = Column(UUID(as_uuid=True), ForeignKey('USER._id'))
+    _contact_id = Column(UUID(as_uuid=True), unique=True, nullable=False, primary_key=True, default=uuid.uuid4)
 
     contact_value = Column(String(255),nullable=False)
     visible = Column(Boolean,nullable=False,default=True)
-    contact_type = Column(Enum('SOCIAL_MEDIA','EMAIL','PHONE','PORTFOLIO'))
+    contact_type = Column(Enum('SOCIAL_MEDIA','EMAIL','PHONE','PORTFOLIO',name='contact_type'))
     thumb_img = Column(String(1000))
     thumb_txt = Column(String(255))
 
@@ -69,9 +72,9 @@ class Project(Base):
     All projects
     '''
     __tablename__ = "PROJECT"
-    user_id = Column(Integer, ForeignKey("USER.id"))
-    project_id = Column(Integer, primary_key = True ,autoincrement=True)
-    project_type = Column(Enum('DEVELOPMENT','RESEARCH'), nullable=False)
+    _user_id = Column(UUID(as_uuid=True), ForeignKey("USER._id"))
+    _project_id = Column(UUID(as_uuid=True), unique=True, nullable=False, primary_key=True, default=uuid.uuid4)
+    project_type = Column(Enum('DEVELOPMENT','RESEARCH',name='project_type'), nullable=False)
 
     tags = Column(String(255))
     title = Column(String(255),nullable=False)
@@ -98,9 +101,9 @@ class Experience(Base):
     All experiences (work and study)
     '''
     __tablename__ = "EXPERIENCE"
-    user_id = Column(Integer, ForeignKey("USER.id"))
-    experience_id = Column(Integer, primary_key = True ,autoincrement=True)
-    experience_type = Column(Enum('STUDY','INDUSTRY','ACADEMIC'), nullable=False)
+    _user_id = Column(UUID(as_uuid=True), ForeignKey("USER._id"))
+    _experience_id = Column(UUID(as_uuid=True), unique=True, nullable=False, primary_key=True, default=uuid.uuid4)
+    experience_type = Column(Enum('STUDY','INDUSTRY','ACADEMIC',name='experience_type'), nullable=False)
     visible = Column(Boolean,nullable=False,default=True)
 
     title = Column(String(255))
@@ -123,8 +126,8 @@ class Blog(Base):
     Blog class
     '''
     __tablename__ = "BLOG"
-    user_id = Column(Integer, ForeignKey("USER.id"))
-    blog_id = Column(Integer, primary_key = True ,autoincrement=True)
+    _user_id = Column(UUID(as_uuid=True), ForeignKey("USER._id"))
+    _blog_id = Column(UUID(as_uuid=True), unique=True, nullable=False, primary_key=True, default=uuid.uuid4)
 
     tilte = Column(String(255),nullable=False)
     sub_heading = Column(String(255))
@@ -140,8 +143,8 @@ class Accolade(Base):
     Achievements
     '''
     __tablename__ = "ACCOLADE"
-    user_id = Column(Integer, ForeignKey("USER.id"))
-    accolade_id = Column(Integer, primary_key = True ,autoincrement=True)
+    _user_id = Column(UUID(as_uuid=True), ForeignKey("USER._id"))
+    _accolade_id = Column(UUID(as_uuid=True), unique=True, nullable=False, primary_key=True, default=uuid.uuid4)
 
     title = Column(String(255),nullable=False)
     date = Column(Date)
@@ -153,5 +156,17 @@ class Accolade(Base):
 
     provider = Column(String(255))
     provider_link = Column(String(1000))
+
+    user_info = relationship(User)
+
+class Skill(Base):
+    '''
+    List of skills for the user
+    '''
+    __tablename__ = "SKILLS"
+    _user_id = Column(UUID(as_uuid=True), ForeignKey("USER._id"))
+    _skill_id = Column(UUID(as_uuid=True), unique=True, nullable=False, primary_key=True, default=uuid.uuid4)
+
+    skill_name = Column(String(255))
 
     user_info = relationship(User)

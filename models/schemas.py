@@ -1,5 +1,6 @@
 from typing import List, Optional
-from pydantic import BaseModel
+import uuid
+from pydantic import BaseModel, validator
 
 
 class UserBase(BaseModel):
@@ -10,7 +11,7 @@ class UserBase(BaseModel):
     profile_img: Optional[str] = None
     thumb_img: Optional[str] = None
     cover_img: Optional[str] = None
-
+    
     class Config:
         orm_mode = True
 
@@ -19,15 +20,23 @@ class UserCreate(UserBase):
 
 
 class User(UserBase):
-    id: int
+    _id: str
     verified: bool
 
+    # @validator('_id')
+    # def validate_uuid(cls, value):
+    #     try:
+    #         uuid.UUID(value)
+    #     except ValueError:
+    #         raise ValueError('Invalid UUID')
+    #     return value
+    
     class Config:
         orm_mode = True
 
 class UserSecured(BaseModel):
-    user_id: int
-    secured_id: int
+    _user_id: str
+    _secured_id: str
     user_info: User
     email: str
     hashed_password: str
@@ -47,13 +56,13 @@ class ContactBase(BaseModel):
         orm_mode = True
 
 class ContactCreate(ContactBase):
-    user_id: int
+    _user_id: str
 
     class Config:
         orm_mode = True
 
 class Contact(ContactBase):
-    contact_id: int
+    _contact_id: str
 
     class Config:
         orm_mode = True
@@ -77,12 +86,12 @@ class ProjectBase(BaseModel):
 
 
 class ProjectCreate(ProjectBase):
-    user_id: int
+    _user_id: str
     visible: bool = True
 
 
 class Project(ProjectBase):
-    project_id: int
+    _project_id: str
 
     class Config:
         orm_mode = True
@@ -104,12 +113,12 @@ class ExperienceBase(BaseModel):
 
 
 class ExperienceCreate(ExperienceBase):
-    user_id: int
+    _user_id: str
     visible: bool = True
 
 
 class Experience(ExperienceBase):
-    experience_id: int
+    _experience_id: str
 
     class Config:
         orm_mode = True
@@ -124,12 +133,12 @@ class BlogBase(BaseModel):
 
 
 class BlogCreate(BlogBase):
-    user_id: int
+    _user_id: str
     visible: bool = True
 
 
 class Blog(BlogBase):
-    blog_id: int
+    _blog_id: str
 
     class Config:
         orm_mode = True
@@ -147,17 +156,33 @@ class AccoladeBase(BaseModel):
 
 
 class AccoladeCreate(AccoladeBase):
-    user_id: int
+    _user_id: str
     visible: bool = True
 
 
 class Accolade(AccoladeBase):
-    accolade_id: int
+    _accolade_id: str
 
     class Config:
         orm_mode = True
 
 
+class SkillBase(BaseModel):
+    skill_name: str
 
+    class Config:
+        orm_mode = True
+
+class SkillCreate(SkillBase):
+    _user_id: str
+
+    class Config:
+        orm_mode = True
+
+class Skill(SkillBase):
+    _skill_id: str
+
+    class Config:
+        orm_mode = True
 
 

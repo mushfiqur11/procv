@@ -4,7 +4,7 @@ from models import models,schemas
 from typing import List, Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
+# from jose import JWTError, jwt
 from utils.secrets import get_secret_key
 import bcrypt
 from datetime import datetime, timedelta
@@ -57,7 +57,7 @@ def get_db():
 #     user = db.query(models.User).filter(models.User.username==username).first()
 #     if not user:
 #         return False
-#     user_secured = db.query(models.UserSecured).filter(models.UserSecured.user_id == user.id).first()
+#     user_secured = db.query(models.UserSecured).filter(models.UserSecured._user_id == user.id).first()
 #     if not user_secured:
 #         return False
 #     called_hash = hash_password(password,user_secured.salt)
@@ -94,19 +94,31 @@ def get_users(limit: int = 100, db: Session = Depends(get_db)) -> List[models.Us
 #     return current_user
 
 # Function to get user by id
-def get_user_by_id(user_id: int, db: Session = Depends(get_db)) -> Optional[models.User]:
-    user = db.query(models.User).filter(models.User.id == user_id).first()
+def get_user_by_id(_user_id: str, db: Session = Depends(get_db)) -> Optional[models.User]:
+    user = db.query(models.User).filter(models.User.id == _user_id).first()
     return user
 
 # Function to get user by email
 def get_user_by_email(email: str, db: Session = Depends(get_db)) -> Optional[models.User]:
-    user = db.query(models.User).filter(models.User.email == email).first()
-    return user
+    try:
+        user = db.query(models.User).filter(models.User.email == email).first()
+        return user
+    except Exception as e:
+        db.rollback()
+        print(e)
+    return None
 
 # Function to get user by username
 def get_user_by_username(username: str, db: Session = Depends(get_db)) -> Optional[models.User]:
-    user = db.query(models.User).filter(models.User.username == username).first()
-    return user
+    try:
+        print(f'user:{username}')
+        user = db.query(models.User).filter(models.User.username == username).first()
+        print(user._id)
+        return user
+    except Exception as e:
+        db.rollback()
+        print(e)
+    return None
 
 # Function to create a user
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)) -> Optional[models.User]:
@@ -122,43 +134,44 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)) -> Opti
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    try:
-        salt = bcrypt.gensalt()
-        password = user.password.encode('utf-8')
-        db_user_secured = models.UserSecured(
-            user_id = db_user.id,
-            user_info = db_user,
-            username = db_user.username,
-            hashed_password = hash_password(password,salt),
-            salt = salt
-        )
-        db.add(db_user_secured)
-        db.commit()
-        db.refresh(db_user_secured)
-        return db_user
-    except:
-        db.remove(db_user)
-        db.commit()
-        db.refresh(db_user)
-        return None
+    return db_user
+    # try:
+    #     salt = bcrypt.gensalt()
+    #     password = user.password.encode('utf-8')
+    #     db_user_secured = models.UserSecured(
+    #         _user_id = db_user.id,
+    #         user_info = db_user,
+    #         username = db_user.username,
+    #         hashed_password = hash_password(password,salt),
+    #         salt = salt
+    #     )
+    #     db.add(db_user_secured)
+    #     db.commit()
+    #     db.refresh(db_user_secured)
+    #     return db_user
+    # except:
+    #     db.remove(db_user)
+    #     db.commit()
+    #     db.refresh(db_user)
+    #     return None
     
 
 
-def get_contacts_by_user(user_id: int,  db: Session = Depends(get_db), limit:int = 100):
-    user = get_user_by_id(user_id,db)
+def get_contacts_by_user(_user_id: str,  db: Session = Depends(get_db), limit:int = 100):
+    user = get_user_by_id(_user_id,db)
     if user is None:
         return []
-    contacts = db.query(models.Contact).filter(models.Contact.user_id == user.id).limit(limit).all()
+    contacts = db.query(models.Contact).filter(models.Contact._user_id == user.id).limit(limit).all()
     return contacts
 
-def get_contacts_by_user_and_type(user_id: int, type:str, db: Session = Depends(get_db), limit:int = 100):
-    user = get_user_by_id(user_id,db)
+def get_contacts_by_user_and_type(_user_id: str, type:str, db: Session = Depends(get_db), limit:int = 100):
+    user = get_user_by_id(_user_id,db)
     if user is None:
         return []
-    contacts = db.query(models.Contact).filter(models.Contact.user_id == user.id).filter(models.Contact.contact_type==type).filter(models.Contact.visible==True).limit(limit).all()
+    contacts = db.query(models.Contact).filter(models.Contact._user_id == user.id).filter(models.Contact.contact_type==type).filter(models.Contact.visible==True).limit(limit).all()
     return contacts
 
-def create_contact(contact: schemas.ContactCreate,  db: Session = Depends(get_db)):
+def create_contact(contact: schemas.ContactCreate, user_id: str, db: Session = Depends(get_db)):
     # try:
     db_contact = models.Contact(
         visible = contact.visible,
@@ -166,7 +179,7 @@ def create_contact(contact: schemas.ContactCreate,  db: Session = Depends(get_db
         contact_type = contact.contact_type,
         thumb_img = contact.thumb_img,
         thumb_txt = contact.thumb_txt,
-        user_id = contact.user_id
+        _user_id = user_id
     )
     db.add(db_contact)
     db.commit()
@@ -176,21 +189,21 @@ def create_contact(contact: schemas.ContactCreate,  db: Session = Depends(get_db
 
 # ### Project
 
-def get_projects_by_user(user_id: int,  db: Session = Depends(get_db), limit:int = 100):
-    user = get_user_by_id(user_id,db)
+def get_projects_by_user(_user_id: str,  db: Session = Depends(get_db), limit:int = 100):
+    user = get_user_by_id(_user_id,db)
     if user is None:
         return []
-    projects = db.query(models.Project).filter(models.Project.user_id == user.id).limit(limit).all()
+    projects = db.query(models.Project).filter(models.Project._user_id == user.id).limit(limit).all()
     return projects
 
-def get_projects_by_user_and_type(user_id: int, type:str, db: Session = Depends(get_db), limit:int = 100):
-    user = get_user_by_id(user_id,db)
+def get_projects_by_user_and_type(_user_id: str, type:str, db: Session = Depends(get_db), limit:int = 100):
+    user = get_user_by_id(_user_id,db)
     if user is None:
         return []
-    projects = db.query(models.Project).filter(models.Project.user_id == user.id).filter(models.Project.project_type==type).filter(models.Project.visible==True).limit(limit).all()
+    projects = db.query(models.Project).filter(models.Project._user_id == user.id).filter(models.Project.project_type==type).filter(models.Project.visible==True).limit(limit).all()
     return projects
 
-def create_project(project: schemas.ProjectCreate,  db: Session = Depends(get_db)):
+def create_project(project: schemas.ProjectCreate, user_id: str,  db: Session = Depends(get_db)):
     # try:
     db_project = models.Project(
         title = project.title,
@@ -208,7 +221,7 @@ def create_project(project: schemas.ProjectCreate,  db: Session = Depends(get_db
         app = project.app,
         other_link = project.other_link,
         other_link_title = project.other_link_title,
-        user_id = project.user_id
+        _user_id = user_id
     )
     db.add(db_project)
     db.commit()
@@ -218,21 +231,21 @@ def create_project(project: schemas.ProjectCreate,  db: Session = Depends(get_db
 
 # ### Experience
 
-def get_experiences_by_user(user_id: int,  db: Session = Depends(get_db), limit:int = 100):
-    user = get_user_by_id(user_id,db)
+def get_experiences_by_user(_user_id: str,  db: Session = Depends(get_db), limit:int = 100):
+    user = get_user_by_id(_user_id,db)
     if user is None:
         return []
-    experiences = db.query(models.Experience).filter(models.Experience.user_id == user.id).limit(limit).all()
+    experiences = db.query(models.Experience).filter(models.Experience._user_id == user.id).limit(limit).all()
     return experiences
 
-def get_experience_by_user_and_type(user_id: int, type:str, db: Session = Depends(get_db), limit:int = 100):
-    user = get_user_by_id(user_id,db)
+def get_experience_by_user_and_type(_user_id: str, type:str, db: Session = Depends(get_db), limit:int = 100):
+    user = get_user_by_id(_user_id,db)
     if user is None:
         return []
-    experiences = db.query(models.Experience).filter(models.Experience.user_id == user.id).filter(models.Experience.experience_type==type).filter(models.Experience.visible==True).limit(limit).all()
+    experiences = db.query(models.Experience).filter(models.Experience._user_id == user.id).filter(models.Experience.experience_type==type).filter(models.Experience.visible==True).limit(limit).all()
     return experiences
 
-def create_experience(experience: schemas.ExperienceCreate,  db: Session = Depends(get_db)):
+def create_experience(experience: schemas.ExperienceCreate, user_id: str,  db: Session = Depends(get_db)):
     # try:
     db_experience = models.Experience(
         experience_type = experience.experience_type,
@@ -248,7 +261,7 @@ def create_experience(experience: schemas.ExperienceCreate,  db: Session = Depen
         supervisor= experience.supervisor,
         supervisor_link= experience.supervisor_link,
         visible = experience.visible,
-        user_id = experience.user_id,
+        _user_id = user_id,
     )
     db.add(db_experience)
     db.commit()
@@ -257,14 +270,14 @@ def create_experience(experience: schemas.ExperienceCreate,  db: Session = Depen
 
 # ### Accolade
 
-def get_accolades_by_user(user_id: int,  db: Session = Depends(get_db), limit:int = 100):
-    user = get_user_by_id(user_id,db)
+def get_accolades_by_user(_user_id: str,  db: Session = Depends(get_db), limit:int = 100):
+    user = get_user_by_id(_user_id,db)
     if user is None:
         return []
-    accolades = db.query(models.Accolade).filter(models.Accolade.user_id == user.id).limit(limit).all()
+    accolades = db.query(models.Accolade).filter(models.Accolade._user_id == user.id).limit(limit).all()
     return accolades
 
-def create_accolade(accolade: schemas.AccoladeCreate,  db: Session = Depends(get_db)):
+def create_accolade(accolade: schemas.AccoladeCreate, user_id: str,  db: Session = Depends(get_db)):
     # try:
     db_accolade = models.Accolade(
         title = accolade.title,
@@ -275,7 +288,7 @@ def create_accolade(accolade: schemas.AccoladeCreate,  db: Session = Depends(get
         image= accolade.image,
         provider= accolade.provider,
         provider_link= accolade.provider_link,
-        user_id = accolade.user_id,
+        _user_id = user_id,
         visible = accolade.visible
     )
     db.add(db_accolade)
@@ -289,14 +302,14 @@ def get_blogs(db: Session = Depends(get_db), limit:int = 100):
     blogs = db.query(models.Blog).limit(limit).all()
     return blogs
 
-def get_blogs_by_user(user_id: int,  db: Session = Depends(get_db), limit:int = 100):
-    user = get_user_by_id(user_id,db)
+def get_blogs_by_user(_user_id: str,  db: Session = Depends(get_db), limit:int = 100):
+    user = get_user_by_id(_user_id,db)
     if user is None:
         return []
-    blogs = db.query(models.Blog).filter(models.Blog.user_id == user.id).limit(limit).all()
+    blogs = db.query(models.Blog).filter(models.Blog._user_id == user.id).limit(limit).all()
     return blogs
 
-def create_blog(blog: schemas.BlogCreate,  db: Session = Depends(get_db)):
+def create_blog(blog: schemas.BlogCreate, user_id: str,  db: Session = Depends(get_db)):
     # try:
     db_blog = models.Blog(
         title = blog.title,
@@ -304,7 +317,7 @@ def create_blog(blog: schemas.BlogCreate,  db: Session = Depends(get_db)):
         thumb_img = blog.thumb_img,
         tags = blog.tags,
         text = blog.text,
-        user_id = blog.user_id,
+        _user_id = user_id,
         visible = blog.visible
     )
     db.add(db_blog)
@@ -313,3 +326,21 @@ def create_blog(blog: schemas.BlogCreate,  db: Session = Depends(get_db)):
     return db_blog
 
 
+### Skill
+
+def get_skill_by_user(_user_id: str,  db: Session = Depends(get_db), limit:int = 100):
+    user = get_user_by_id(_user_id,db)
+    if user is None:
+        return []
+    skills = db.query(models.Skill).filter(models.Skill._user_id == user.id).limit(limit).all()
+    return skills
+
+def create_skills(skill: schemas.SkillCreate, user_id: str,  db: Session = Depends(get_db)):
+    # try:
+    db_skill = models.Skill(
+        skill_name = skill.skill_name
+    )
+    db.add(db_skill)
+    db.commit()
+    db.refresh(db_skill)
+    return db_skill

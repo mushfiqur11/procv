@@ -18,7 +18,7 @@ app.add_middleware(SessionMiddleware, secret_key="!secret")
 
 
 def get_db():
-    engine = get_engine('procv')
+    engine = get_engine('defaultdb')
     SessionLocal = sessionmaker(bind=engine)
     db = SessionLocal()
     try:
@@ -34,7 +34,7 @@ async def get_users(limit: int = 100, db: Session = Depends(get_db)):
     users = sql_modules.get_users(limit=limit, db=db)
     return users
 
-@app.get('/users/{user_id}', response_model=schemas.User)
+@app.get('/users/user_id={user_id}', response_model=schemas.User)
 # async def get_user_by_id(user_id:int, db: Session = Depends(get_db)):
 #     user = mongo_modules.get_user_by_id(user_id, db)
 #     if user is None:
@@ -42,6 +42,18 @@ async def get_users(limit: int = 100, db: Session = Depends(get_db)):
 #     return user
 async def get_user_by_id(user_id:int, db: Session = Depends(get_db)):
     user = sql_modules.get_user_by_id(user_id, db)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+@app.get('/users/username={username}', response_model=schemas.User)
+# async def get_user_by_id(user_id:int, db: Session = Depends(get_db)):
+#     user = mongo_modules.get_user_by_id(user_id, db)
+#     if user is None:
+#         raise HTTPException(status_code=404, detail="User not found")
+#     return user
+async def get_user_by_username(username: str, db: Session = Depends(get_db)):
+    user = sql_modules.get_user_by_username(username, db)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return user
@@ -72,77 +84,93 @@ async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 ### CONTACTS
 
-@app.get('/contacts/{user_id}',response_model=List[schemas.Contact])
-# async def get_contacts_by_user(user_id: int, db: Session=Depends(get_db)):
+@app.get('/contacts/user_id={user_id}',response_model=List[schemas.Contact])
+# async def get_contacts_by_user(user_id: str, db: Session=Depends(get_db)):
 #     return mongo_modules.get_contacts_by_user(user_id,db)
-async def get_contacts_by_user(user_id: int, db: Session=Depends(get_db)):
+async def get_contacts_by_user(user_id: str, db: Session=Depends(get_db)):
     return sql_modules.get_contacts_by_user(user_id,db)
 
-@app.get('/contacts/{user_id}/{contact_type}',response_model=List[schemas.Contact])
-# async def get_contacts_by_user_and_type(user_id: int, contact_type:str, db: Session=Depends(get_db)):
+@app.get('/contacts/user_id={user_id}/{contact_type}',response_model=List[schemas.Contact])
+# async def get_contacts_by_user_and_type(user_id: str, contact_type:str, db: Session=Depends(get_db)):
 #     return mongo_modules.get_contacts_by_user_and_type(user_id,contact_type,db)
-async def get_contacts_by_user_and_type(user_id: int, contact_type:str, db: Session=Depends(get_db)):
+async def get_contacts_by_user_and_type(user_id: str, contact_type:str, db: Session=Depends(get_db)):
     return sql_modules.get_contacts_by_user_and_type(user_id,contact_type,db)
 
-@app.post('/contacts/',response_model=schemas.Contact)
+@app.post('/contacts/user_id={user_id}',response_model=schemas.Contact)
 # async def create_contact(contact: schemas.ContactCreate, db: Session= Depends(get_db)):
 #     return mongo_modules.create_contact(contact,db)
-async def create_contact(contact: schemas.ContactCreate, db: Session= Depends(get_db)):
-    return sql_modules.create_contact(contact,db)
+async def create_contact(contact: schemas.ContactCreate, user_id:str, db: Session= Depends(get_db)):
+    user = sql_modules.get_user_by_id(user_id, db)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    user_id = user._id
+    return sql_modules.create_contact(contact,user_id, db)
 
 ### PROJECTS
 
-@app.get('/projects/{user_id}', response_model=List[schemas.Project])
-# async def get_projects_by_user(user_id: int, db: Session=Depends(get_db)):
+@app.get('/projects/user_id={user_id}', response_model=List[schemas.Project])
+# async def get_projects_by_user(user_id: str, db: Session=Depends(get_db)):
 #     return mongo_modules.get_projects_by_user(user_id,db)
-async def get_projects_by_user(user_id: int, db: Session=Depends(get_db)):
+async def get_projects_by_user(user_id: str, db: Session=Depends(get_db)):
     return sql_modules.get_projects_by_user(user_id,db)
 
-@app.get('/projects/{user_id}/{project_type}', response_model=List[schemas.Project])
-# async def get_projects_by_user_and_type(user_id: int, project_type:str, db: Session=Depends(get_db)):
+@app.get('/projects/user_id={user_id}/{project_type}', response_model=List[schemas.Project])
+# async def get_projects_by_user_and_type(user_id: str, project_type:str, db: Session=Depends(get_db)):
 #     return mongo_modules.get_projects_by_user_and_type(user_id,project_type,db)
-async def get_projects_by_user_and_type(user_id: int, project_type:str, db: Session=Depends(get_db)):
+async def get_projects_by_user_and_type(user_id: str, project_type:str, db: Session=Depends(get_db)):
     return sql_modules.get_projects_by_user_and_type(user_id,project_type,db)
 
-@app.post('/projects/', response_model=schemas.Project)
+@app.post('/projects/user_id={user_id}', response_model=schemas.Project)
 # async def create_project(project: schemas.ProjectCreate, db: Session= Depends(get_db)):
 #     return mongo_modules.create_project(project, db)
-async def create_project(project: schemas.ProjectCreate, db: Session= Depends(get_db)):
-    return sql_modules.create_project(project, db)
+async def create_project(project: schemas.Project, user_id:str, db: Session= Depends(get_db)):
+    user = sql_modules.get_user_by_id(user_id, db)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    user_id = user._id
+    return sql_modules.create_project(project, user_id, db)
 
 ### EXPERIENCES
 
-@app.get('/experiences/{user_id}', response_model = List[schemas.Experience])
-# async def get_experiences_by_user(user_id: int, db: Session=Depends(get_db)):
+@app.get('/experiences/user_id={user_id}', response_model = List[schemas.Experience])
+# async def get_experiences_by_user(user_id: str, db: Session=Depends(get_db)):
 #     return mongo_modules.get_experiences_by_user(user_id,db)
-async def get_experiences_by_user(user_id: int, db: Session=Depends(get_db)):
+async def get_experiences_by_user(user_id: str, db: Session=Depends(get_db)):
     return sql_modules.get_experiences_by_user(user_id,db)
 
-@app.get('/experiences/{user_id}/{exp_type}', response_model = List[schemas.Experience])
-# async def get_experiences_by_user_and_type(user_id: int, exp_type:str, db: Session=Depends(get_db)):
+@app.get('/experiences/user_id={user_id}/{exp_type}', response_model = List[schemas.Experience])
+# async def get_experiences_by_user_and_type(user_id: str, exp_type:str, db: Session=Depends(get_db)):
 #     return mongo_modules.get_experiences_by_user_and_type(user_id,exp_type,db)
-async def get_experiences_by_user_and_type(user_id: int, exp_type:str, db: Session=Depends(get_db)):
+async def get_experiences_by_user_and_type(user_id: str, exp_type:str, db: Session=Depends(get_db)):
     return sql_modules.get_experiences_by_user_and_type(user_id,exp_type,db)
 
-@app.post('/experiences/', response_model=schemas.Experience)
+@app.post('/experiences/user_id={user_id}', response_model=schemas.Experience)
 # async def create_experience(experience: schemas.ExperienceCreate, db: Session= Depends(get_db)):
 #     return mongo_modules.create_experience(experience,db)
-async def create_experience(experience: schemas.ExperienceCreate, db: Session= Depends(get_db)):
-    return sql_modules.create_experience(experience,db)
+async def create_experience(experience: schemas.ExperienceCreate, user_id:str, db: Session= Depends(get_db)):
+    user = sql_modules.get_user_by_id(user_id, db)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    user_id = user._id
+    return sql_modules.create_experience(experience,user_id, db)
 
 ### ACCOLADES
 
-@app.get('/accolades/{user_id}', response_model = List[schemas.Accolade])
-# async def get_accolades_by_user(user_id: int, db: Session = Depends(get_db)):
+@app.get('/accolades/user_id={user_id}', response_model = List[schemas.Accolade])
+# async def get_accolades_by_user(user_id: str, db: Session = Depends(get_db)):
 #     return mongo_modules.get_accolades_by_user(user_id, db)
-async def get_accolades_by_user(user_id: int, db: Session = Depends(get_db)):
+async def get_accolades_by_user(user_id: str, db: Session = Depends(get_db)):
     return sql_modules.get_accolades_by_user(user_id, db)
 
-@app.post('/accolades/', response_model=schemas.Accolade)
+@app.post('/accolades/user_id={user_id}', response_model=schemas.Accolade)
 # async def create_accolade(accolade: schemas.AccoladeCreate, db: Session= Depends(get_db)):
 #     return mongo_modules.create_accolade(accolade,db)
-async def create_accolade(accolade: schemas.AccoladeCreate, db: Session= Depends(get_db)):
-    return sql_modules.create_accolade(accolade,db)
+async def create_accolade(accolade: schemas.AccoladeCreate, user_id:str, db: Session= Depends(get_db)):
+    user = sql_modules.get_user_by_id(user_id, db)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    user_id = user._id
+    return sql_modules.create_accolade(accolade,user_id, db)
 
 
 ### BLOGS
@@ -153,17 +181,21 @@ async def create_accolade(accolade: schemas.AccoladeCreate, db: Session= Depends
 async def get_blogs(db: Session= Depends(get_db)):
     return sql_modules.get_blogs(db)
 
-@app.get('/blogs/{user_id}', response_model = List[schemas.Blog])
-# async def get_blogs_by_user(user_id: int, db: Session= Depends(get_db)):
+@app.get('/blogs/user_id={user_id}', response_model = List[schemas.Blog])
+# async def get_blogs_by_user(user_id: str, db: Session= Depends(get_db)):
 #     return mongo_modules.get_blogs_by_user(user_id,db)
-async def get_blogs_by_user(user_id: int, db: Session= Depends(get_db)):
+async def get_blogs_by_user(user_id: str, db: Session= Depends(get_db)):
     return sql_modules.get_blogs_by_user(user_id,db)
 
-@app.post('/blogs/', response_model=schemas.Blog)
+@app.post('/blogs/user_id={user_id}', response_model=schemas.Blog)
 # async def create_blog(blog: schemas.BlogCreate, db: Session= Depends(get_db)):
 #     return mongo_modules.create_blog(blog,db)
-async def create_blog(blog: schemas.BlogCreate, db: Session= Depends(get_db)):
-    return sql_modules.create_blog(blog,db)
+async def create_blog(blog: schemas.BlogCreate, user_id:str, db: Session= Depends(get_db)):
+    user = sql_modules.get_user_by_id(user_id, db)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    user_id = user._id
+    return sql_modules.create_blog(blog,user_id, db)
 
 
 ### LOGIN ROUTES (INTERNAL + GOOGLE + FACEBOOK + AMAZON)
