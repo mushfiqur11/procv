@@ -9,6 +9,7 @@ from controllers import google, facebook, amazon
 from starlette.requests import Request
 from app import sql_modules,mongo_modules
 
+from fastapi.middleware.cors import CORSMiddleware
 
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
@@ -16,6 +17,21 @@ app = FastAPI()
 
 app.add_middleware(SessionMiddleware, secret_key="!secret")
 
+
+origins = [
+    "http://localhost",
+    "http://localhost:8000",
+    "http://example.com",
+    "https://example.com",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def get_db():
     engine = get_engine('defaultdb')
