@@ -288,10 +288,13 @@ async def logout_google(request: Request):
 # async def logout_facebook():
 #     return {'Data':'Function not implemented'}
 
+import pdfkit
 
 @app.get('/generate_cv/user_id={user_id}')
 async def generate_cv(job_prompt:str, user_id: str, db: Session=Depends(get_db)):
     exp_list = sql_modules.get_experiences_by_user(user_id, db)
     summarized_workexp = ai.get_workexp_summary(exp_list, job_prompt)
-    return summarized_workexp
+    pdf = ai.generate_pdf(summarized_workexp)
+    pdfkit.from_string(pdf, "output.pdf", verbose=True)
+
 

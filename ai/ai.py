@@ -52,3 +52,18 @@ def get_workexp_summary(work_exp, job_prompt):
     print(summary)
     return summary
 
+def generate_pdf(summary):
+    model = "text-davinci-003"
+    prompt = f'''From the following summary, generate an HTML with portfolio format {summary}
+    '''
+    response = openai.Completion.create(
+        engine=model,
+        prompt=prompt,
+        max_tokens=1000,
+        n=1,
+        stop=None,
+        temperature=0.5,
+    )
+    html = response.choices[0].text
+
+    return html
