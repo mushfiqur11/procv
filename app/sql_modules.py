@@ -94,8 +94,8 @@ def get_users(limit: int = 100, db: Session = Depends(get_db)) -> List[models.Us
 #     return current_user
 
 # Function to get user by id
-def get_user_by_id(_user_id: str, db: Session = Depends(get_db)) -> Optional[models.User]:
-    user = db.query(models.User).filter(models.user._id == _user_id).first()
+def get_user_by_id(user_id: str, db: Session = Depends(get_db)) -> Optional[models.User]:
+    user = db.query(models.User).filter(models.User._id == user_id).first()
     return user
 
 # Function to get user by email
