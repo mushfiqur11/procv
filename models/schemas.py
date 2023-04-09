@@ -150,7 +150,7 @@ class Blog(BlogBase):
 
 class AccoladeBase(BaseModel):
     title: str
-    date: Optional[str] = None
+    date: Optional[date] = None
     position: Optional[str] = None
     role: Optional[str] = None
     desc: Optional[str] = None
