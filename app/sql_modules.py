@@ -395,7 +395,8 @@ def submit(submitResponse: schemas.Submit,db: Session = Depends(get_db)):
         profile_img=submitResponse.profileImg,
         cover_img=submitResponse.coverImg,
         thumb_img=submitResponse.thumbnailImg,
-        bio=submitResponse.bio
+        bio=submitResponse.bio,
+        verified=True
     )
     user = create_user(user_schema,db)
     if user:

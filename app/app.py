@@ -8,8 +8,9 @@ from starlette.middleware.sessions import SessionMiddleware
 from controllers import google, facebook, amazon
 from starlette.requests import Request
 from app import sql_modules,mongo_modules
-
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+from ai import ai
 
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
@@ -288,4 +289,9 @@ async def logout_google(request: Request):
 #     return {'Data':'Function not implemented'}
 
 
+@app.get('/generate_cv/user_id={user_id}')
+async def generate_cv(job_prompt:str, user_id: str, db: Session=Depends(get_db)):
+    exp_list = sql_modules.get_experiences_by_user(user_id, db)
+    summarized_workexp = ai.get_workexp_summary(exp_list, job_prompt)
+    return summarized_workexp
 
