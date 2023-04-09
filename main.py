@@ -2,7 +2,8 @@ import logging
 import uvicorn
 import argparse
 from app import *
-def start_server(host = "127.0.0.1",port = 8009):
+
+def start_server(host = "127.0.0.1",port = 8050):
     '''
     The functions starts the FastAPI server in port 8000
     '''
@@ -16,7 +17,9 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
     parser.add_argument('--host', type=str, default="localhost", help="Host address")
-    parser.add_argument('--port', type=int, default=8009, help="Host port")
+
+    parser.add_argument('--port', type=int, default=8050, help="Host port")
+
     args = parser.parse_args()
 
     host = args.host
