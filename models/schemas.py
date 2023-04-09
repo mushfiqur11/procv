@@ -190,7 +190,22 @@ class Skill(SkillBase):
         orm_mode = True
 
 
-
+class Submit(BaseModel):
+    username: str
+    password: str
+    name: Optional[str] = None
+    email: str
+    phone: Optional[str]
+    github: Optional[str]
+    city: Optional[str] = None
+    profileImg: Optional[str] = None
+    coverImg: Optional[str] = None
+    thumbnailImg: Optional[str] = None
+    bio: Optional[str] = None
+    projects: Optional[List[ProjectCreate]] =None
+    education: Optional[List[ExperienceCreate]] = None
+    experience: Optional[List[ExperienceCreate]] = None
+    skills: Optional[List[SkillCreate]] = None
 
 
 

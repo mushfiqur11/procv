@@ -236,6 +236,11 @@ async def get_about(user_id:str, db: Session=Depends(get_db)):
     user_id = user._id
     return sql_modules.get_about_user(user_id, db)
 
+
+@app.post('/submit/', response_model=schemas.Submit)
+async def submit(submitResponse: schemas.Submit, db: Session=Depends(get_db)):
+    return sql_modules.submit(submitResponse, db)
+
 ### LOGIN ROUTES (INTERNAL + GOOGLE + FACEBOOK + AMAZON)
 
 @app.get('/login')

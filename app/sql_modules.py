@@ -385,3 +385,36 @@ def update_summary(_user_id: str, summary: str, db: Session = Depends(get_db)):
         db.refresh(user)
 
 # def generate_summary():
+
+def submit(submitResponse: schemas.Submit,db: Session = Depends(get_db)):
+    user_schema = schemas.UserCreate(
+        full_name=submitResponse.name,
+        password=submitResponse.password,
+        email=submitResponse.email,
+        username=submitResponse.username,
+        profile_img=submitResponse.profileImg,
+        cover_img=submitResponse.coverImg,
+        thumb_img=submitResponse.thumbnailImg,
+        bio=submitResponse.bio
+    )
+    user = create_user(user_schema,db)
+    if user:
+        phone_schema = schemas.ContactCreate(
+            contact_type='PHONE',
+            contact_value=submitResponse.phone
+        )
+        city_schema = schemas.ContactCreate(
+            contact_type='LOCATION',
+            contact_value=submitResponse.city
+        )
+        create_contact(phone_schema,user._id,db)
+        create_contact(city_schema,user._id,db)
+        for project in submitResponse.projects:
+            create_project(project,user._id,db)
+        for education in submitResponse.experience:
+            create_experience(education,user._id,db)
+        for experience in submitResponse.experience:
+            create_experience(experience,user._id,db)
+        for skill in submitResponse.skills:
+            create_skill(skill,user._id,db)
+
