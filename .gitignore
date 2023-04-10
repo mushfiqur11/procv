@@ -3,3 +3,9 @@
 
 .space
 
+lib
+
+*.zip
+
+*.pyc
+procv_upload

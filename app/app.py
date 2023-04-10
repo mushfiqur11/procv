@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Response
 import logging
 from models.database import get_engine
 from models import schemas, models
@@ -11,10 +11,12 @@ from app import sql_modules,mongo_modules
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from ai import ai
+from mangum import Mangum
 
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 app = FastAPI()
+handler = Mangum(app)
 
 app.add_middleware(SessionMiddleware, secret_key="!secret")
 
@@ -288,13 +290,20 @@ async def logout_google(request: Request):
 # async def logout_facebook():
 #     return {'Data':'Function not implemented'}
 
-import pdfkit
+# from weasyprint import HTML, CSS
+# from weasyprint.fonts import FontConfiguration
 
-@app.get('/generate_cv/user_id={user_id}')
-async def generate_cv(job_prompt:str, user_id: str, db: Session=Depends(get_db)):
-    exp_list = sql_modules.get_experiences_by_user(user_id, db)
-    summarized_workexp = ai.get_workexp_summary(exp_list, job_prompt)
-    pdf = ai.generate_pdf(summarized_workexp)
-    pdfkit.from_string(pdf, "output.pdf", verbose=True)
+# @app.get('/generate_cv/user_id={user_id}')
+# async def generate_cv(job_prompt:str, user_id: str, db: Session=Depends(get_db)):
+#     exp_list = sql_modules.get_experiences_by_user(user_id, db)
+#     summarized_workexp = ai.get_workexp_summary(exp_list, job_prompt)
+#     pdf = ai.generate_pdf(summarized_workexp)
+#     try:
+#         font_config = FontConfiguration()
+#         css = CSS(string='@page { size: A4; margin: 1cm }')
+#         pdf = HTML(string=pdf).write_pdf(stylesheets=[css], font_config=font_config)
+#         return Response(content=pdf, media_type='application/pdf')
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
 
 
